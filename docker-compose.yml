@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: . # Build context for backend is the root folder
+      dockerfile: api/Dockerfile # Dockerfile name inside 'api' folder
+    command: uvicorn app:app --host 0.0.0.0 --port 8000
+    working_dir: /app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app # Mount only the 'api' folder into its container
+      - ./models:/app/models # add this if models folder is outside api
+    networks:
+      - app-network
+
+  frontend:
+    environment:
+      - DOCKER_ENV=true # Set environment variable for frontend
+    build:
+      context: . # Build context for frontend is the root folder
+      dockerfile: frontend/Dockerfile # Dockerfile name inside 'frontend' folder
+    command: streamlit run frontend.py --server.port 8501 --server.enableCORS false
+    working_dir: /app
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app # Mount only the 'frontend' folder into its container
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
