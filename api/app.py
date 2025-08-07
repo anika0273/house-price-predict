@@ -12,6 +12,7 @@ app = FastAPI()
 # Load model once on startup
 model = joblib.load("models/house_price_model.joblib")
 
+
 # Define input schema
 class HouseFeatures(BaseModel):
     MedInc: float
@@ -23,9 +24,11 @@ class HouseFeatures(BaseModel):
     Latitude: float
     Longitude: float
 
+
 @app.get("/")
 def home():
     return {"message": "House Price Prediction API"}
+
 
 @app.post("/predict")
 def predict_price(features: HouseFeatures):
@@ -44,7 +47,10 @@ def predict_price(features: HouseFeatures):
     return {"predicted_price": round(float(prediction[0]), 3)}
 
 
-# Run the application with:
+# To run this application, ensure you have FastAPI and Uvicorn installed.
+# You can install them using pip:
+# pip install fastapi uvicorn
+# After that, you can run the application using Uvicorn:
 # uvicorn api.app:app --reload
 # This will start the FastAPI server and you can access the API at http://127.0.0.1:8000/docs
 # CTRL+ C to stop the server.

@@ -30,7 +30,7 @@ jobs:
           pip install -r requirements.txt
           pip install flake8 pytest
 
-      # ✅ Step 4: Run linting (PEP8 style check)
+      # ✅ Step 4: Run linting (PEP8 style check) Scans your code using flake8, Ensures clean, readable code
       - name: Run linter (flake8)
         run: |
           flake8 api/ frontend/ ml_models/ --max-line-length=100 --ignore=E203,W503
@@ -40,22 +40,26 @@ jobs:
         run: |
           python ml_models/train_model.py
 
-      # ✅ Step 6: (Optional) Run unit tests if you add them
-      - name: Run unit tests
-        run: |
-          pytest tests/ || echo "⚠️ No tests found yet"
-
-      # ✅ Step 7: Set up Docker Buildx (for building images)
+      # ✅ Step 6: Set up Docker Buildx (for building images)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # ✅ Step 8: Build backend Docker image
+      # ✅ Step 7: Build backend Docker image
       - name: Build backend Docker image
         run: docker build -f api/Dockerfile -t house-backend .
 
-      # ✅ Step 9: Build frontend Docker image
+      # ✅ Step 8: Build frontend Docker image
       - name: Build frontend Docker image
         run: docker build -f frontend/Dockerfile -t house-frontend .
+
+      # ✅ Step 9: Start Backend service in detached mode
+      - name: Start backend service
+        run: docker-compose up -d api
+
+      # ✅ Step 10: (Optional) Run unit tests if you add them
+      - name: Run unit tests
+        run: |
+          pytest tests/
 
       # ✅ Step 10: Success confirmation
       - name: Success message

@@ -19,6 +19,8 @@ def get_data():
     response = requests.get(f"{API_URL}/predict")
     return response.json()
 
+
+# Streamlit app for house price prediction
 st.title("California House Price Prediction")
 
 # Input fields
