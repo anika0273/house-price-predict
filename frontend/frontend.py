@@ -50,3 +50,9 @@ if st.button("Predict Price"):
         st.success(f"Predicted House Price (in 100k USD): {price}")
     else:
         st.error("Prediction failed!")
+
+
+
+
+
+
