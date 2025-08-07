@@ -54,7 +54,7 @@ jobs:
 
       # ✅ Step 9: Start Backend service in detached mode
       - name: Start backend service
-        run: docker compose up -d api
+        run: docker compose up -d backend
 
       # ✅ Step 10: (Optional) Run unit tests if you add them
       - name: Run unit tests
