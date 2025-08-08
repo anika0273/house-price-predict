@@ -44,7 +44,8 @@ if st.button("Predict Price"):
         "Latitude": Latitude,
         "Longitude": Longitude
     }
-    response = requests.post("http://127.0.0.1:8000/predict", json=data)
+    response = requests.post("http://backend:8000/predict", json=data)
+
     if response.status_code == 200:
         price = response.json()["predicted_price"]
         st.success(f"Predicted House Price (in 100k USD): {price}")

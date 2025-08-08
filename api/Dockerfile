@@ -12,6 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the models folder to the working directory of the container i.e. /app folder
+#COPY api/ ./api/
 COPY models/ /app/models/
 
 # Expose the port your FastAPI app listens on
@@ -19,4 +20,6 @@ EXPOSE 8000
 
 # Command to run your FastAPI application
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]
+
 # Starts the FastAPI app: "app" is the filename (app.py), and second "app" is the FastAPI object

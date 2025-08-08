@@ -6,11 +6,11 @@ services:
       context: . # Build context for backend is the root folder
       dockerfile: api/Dockerfile # Dockerfile name inside 'api' folder
     command: uvicorn app:app --host 0.0.0.0 --port 8000
-    working_dir: /app
+    working_dir: /app/api
     ports:
       - "8000:8000"
     volumes:
-      - ./api:/app # Mount only the 'api' folder into its container
+      - ./api:/app/api # Mount only the 'api' folder into its container
       - ./models:/app/models # add this if models folder is outside api
     networks:
       - app-network
@@ -22,11 +22,11 @@ services:
       context: . # Build context for frontend is the root folder
       dockerfile: frontend/Dockerfile # Dockerfile name inside 'frontend' folder
     command: streamlit run frontend.py --server.port 8501 --server.enableCORS false
-    working_dir: /app
+    working_dir: /app/frontend
     ports:
       - "8501:8501"
     volumes:
-      - ./frontend:/app # Mount only the 'frontend' folder into its container
+      - ./frontend:/app/frontend # Mount only the 'frontend' folder into its container
     depends_on:
       - backend
     networks:

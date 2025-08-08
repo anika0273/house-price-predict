@@ -6,11 +6,19 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
 import numpy as np
+import os
+
+# Get the root folder path (one level up from ml_models)
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+models_dir = os.path.join(root_dir, "models")
+
+os.makedirs(models_dir, exist_ok=True)  # Ensure it exists
 
 app = FastAPI()
 
 # Load model once on startup
-model = joblib.load("models/house_price_model.joblib")
+model_path = os.path.join(models_dir, "house_price_model.joblib")
+model = joblib.load(model_path)
 
 
 # Define input schema

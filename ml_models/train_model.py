@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import joblib
+import os
 
 # Load dataset
 data = fetch_california_housing(as_frame=True)
@@ -31,5 +32,11 @@ print(f"Test RMSE: {rmse:.3f}")
 print(f"Test R2: {r2:.3f}")
 
 # Save model
-joblib.dump(model, "models/house_price_model.joblib")
+# Get the root folder path (one level up from ml_models)
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+models_dir = os.path.join(root_dir, "models")
+
+os.makedirs(models_dir, exist_ok=True)  # Ensure it exists
+
+joblib.dump(model, os.path.join(models_dir, "house_price_model.joblib"))
 print("Model saved as house_price_model.joblib")
