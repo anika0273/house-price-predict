@@ -42,7 +42,7 @@ jobs:
         run: gcloud auth configure-docker
 
       - name: Build backend Docker image
-        run: docker build -f api/Dockerfile -t $BACKEND_IMAGE .
+        run: docker build -f api/Dockerfile -t $BACKEND_IMAGE api/
 
       - name: Push backend Docker image
         run: docker push $BACKEND_IMAGE
@@ -55,7 +55,8 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --port 8080 \
-            --memory 1Gi
+            --memory 1Gi \
+            --timeout 300
 
       - name: Build frontend Docker image
         run: docker build -f frontend/Dockerfile -t $FRONTEND_IMAGE .
@@ -73,3 +74,4 @@ jobs:
             --port 8080 \
             --memory 1Gi \
             --set-env-vars API_URL=$BACKEND_URL
+            --timeout 300

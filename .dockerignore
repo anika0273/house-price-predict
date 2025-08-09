@@ -1,0 +1,16 @@
+# From your repo root
+cat <<'EOF' > .dockerignore
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore Git files
+.git
+.gitignore
+
+# Ignore virtual envs
+.venv
+
+# Don't ignore models folder (we need this inside the image)
+!models/
+EOF

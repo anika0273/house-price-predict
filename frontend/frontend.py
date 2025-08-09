@@ -9,15 +9,8 @@ import requests
 # Set backend API URL to Docker Compose service name and port
 import os
 
-if os.getenv("DOCKER_ENV") == "true":
-    API_URL = "http://backend:8000"
-else:
-    API_URL = "http://localhost:8000"
-
-
-def get_data():
-    response = requests.get(f"{API_URL}/predict")
-    return response.json()
+# Get backend API URL from environment variable, fallback to localhost
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 
 # Streamlit app for house price prediction
@@ -44,10 +37,11 @@ if st.button("Predict Price"):
         "Latitude": Latitude,
         "Longitude": Longitude
     }
-    response = requests.post("http://backend:8000/predict", json=data)
 
-    if response.status_code == 200:
-        price = response.json()["predicted_price"]
+    try:
+        response = requests.post(f"{API_URL}/predict", json=data)
+        response.raise_for_status()  # Raise error for bad HTTP status
+        price = response.json().get("predicted_price")
         st.success(f"Predicted House Price (in 100k USD): {price}")
-    else:
-        st.error("Prediction failed!")
+    except requests.exceptions.RequestException as e:
+        st.error(f"Prediction failed: {e}")

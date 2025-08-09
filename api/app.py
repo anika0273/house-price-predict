@@ -7,19 +7,20 @@ from pydantic import BaseModel
 import joblib
 import numpy as np
 import os
-
-# Get the root folder path (one level up from ml_models)
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-models_dir = os.path.join(root_dir, "models")
-
-os.makedirs(models_dir, exist_ok=True)  # Ensure it exists
+import uvicorn
 
 app = FastAPI()
 
-# Load model once on startup
-model_path = os.path.join(models_dir, "house_price_model.joblib")
-model = joblib.load(model_path)
 
+if os.path.exists("/app/models/house_price_model.joblib"):
+    model_path = "/app/models/house_price_model.joblib" # Cloud Run/Docker path
+else:
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    models_dir = os.path.abspath(os.path.join(root_dir, "..", "models"))
+    model_path = os.path.join(models_dir, "house_price_model.joblib")
+
+print(f"Loading model from: {model_path}")
+model = joblib.load(model_path)
 
 # Define input schema
 class HouseFeatures(BaseModel):
@@ -59,6 +60,10 @@ def predict_price(features: HouseFeatures):
 # You can install them using pip:
 # pip install fastapi uvicorn
 # After that, you can run the application using Uvicorn:
-# uvicorn api.app:app --reload
+# uvicorn app:app --reload
 # This will start the FastAPI server and you can access the API at http://127.0.0.1:8000/docs
 # CTRL+ C to stop the server.
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("app:app", host="0.0.0.0", port=port)
