@@ -16,7 +16,7 @@ COPY api/ /app/
 COPY models/ /app/models/
 
 # Expose the port your FastAPI app listens on
-EXPOSE 8000
+EXPOSE 8080
 
 # Command to run your FastAPI application
 #CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
