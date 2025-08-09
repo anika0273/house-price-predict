@@ -14,6 +14,8 @@ app = FastAPI()
 
 if os.path.exists("/app/models/house_price_model.joblib"):
     model_path = "/app/models/house_price_model.joblib" # Cloud Run/Docker path
+
+
 else:
     root_dir = os.path.dirname(os.path.abspath(__file__))
     models_dir = os.path.abspath(os.path.join(root_dir, "..", "models"))
@@ -22,10 +24,12 @@ else:
 print(f"Loading model from: {model_path}")
 model = joblib.load(model_path)
 
+
 # Define input schema
+
 class HouseFeatures(BaseModel):
     MedInc: float
-    HouseAge: float
+    HouseAge: float 
     AveRooms: float
     AveBedrms: float
     Population: float

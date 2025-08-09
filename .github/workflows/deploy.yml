@@ -42,7 +42,7 @@ jobs:
         run: gcloud auth configure-docker
 
       - name: Build backend Docker image
-        run: docker build -f api/Dockerfile -t $BACKEND_IMAGE api/
+        run: docker build -f api/Dockerfile -t $BACKEND_IMAGE .
 
       - name: Push backend Docker image
         run: docker push $BACKEND_IMAGE
