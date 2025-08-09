@@ -73,5 +73,5 @@ jobs:
             --allow-unauthenticated \
             --port 8080 \
             --memory 1Gi \
-            --set-env-vars API_URL=$BACKEND_URL
+            --set-env-vars API_URL=$BACKEND_URL \
             --timeout 300
