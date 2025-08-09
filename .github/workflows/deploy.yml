@@ -32,16 +32,12 @@ jobs:
           workload_identity_provider: "projects/892821973348/locations/global/workloadIdentityPools/github-pool-2/providers/github"
           service_account: "github-developer@house-price-predictor-468401.iam.gserviceaccount.com"
 
-      - name: Set up Cloud SDK
+      - name: Set up Docker authentication for Google Container Registry
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ env.PROJECT_ID }}
           install_components: "docker-credential-gcr"
 
-      - name: Configure Docker for Google Container Registry
-        run: gcloud auth configure-docker
-
-      # Build and push backend
       - name: Build backend Docker image
         run: docker build -f api/Dockerfile -t $BACKEND_IMAGE .
         env:
@@ -52,23 +48,18 @@ jobs:
         env:
           BACKEND_IMAGE: ${{ env.BACKEND_IMAGE }}
 
-      # Deploy backend with explicit port
+      # Use deploy-cloudrun action to deploy backend
       - name: Deploy backend to Cloud Run
-        run: |
-          gcloud run deploy $BACKEND_SERVICE \
-            --image $BACKEND_IMAGE \
-            --region $REGION \
-            --platform managed \
-            --allow-unauthenticated \
-            --port 8080 \
-            --memory 1Gi \
-            --timeout 600
-        env:
-          BACKEND_SERVICE: ${{ env.BACKEND_SERVICE }}
-          BACKEND_IMAGE: ${{ env.BACKEND_IMAGE }}
-          REGION: ${{ env.REGION }}
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.BACKEND_SERVICE }}
+          image: ${{ env.BACKEND_IMAGE }}
+          region: ${{ env.REGION }}
+          allow-unauthenticated: true
+          port: 8080
+          memory: 1Gi
+          timeout: 600s
 
-      # Build and push frontend
       - name: Build frontend Docker image
         run: docker build -f frontend/Dockerfile -t $FRONTEND_IMAGE .
         env:
@@ -79,20 +70,15 @@ jobs:
         env:
           FRONTEND_IMAGE: ${{ env.FRONTEND_IMAGE }}
 
-      # Deploy frontend with quoted env var
+      # Use deploy-cloudrun action to deploy frontend, with API_URL env var
       - name: Deploy frontend to Cloud Run
-        run: |
-          gcloud run deploy $FRONTEND_SERVICE \
-            --image $FRONTEND_IMAGE \
-            --region $REGION \
-            --platform managed \
-            --allow-unauthenticated \
-            --port 8080 \
-            --memory 1Gi \
-            --set-env-vars API_URL="${BACKEND_URL}" \
-            --timeout 300
-        env:
-          FRONTEND_SERVICE: ${{ env.FRONTEND_SERVICE }}
-          FRONTEND_IMAGE: ${{ env.FRONTEND_IMAGE }}
-          REGION: ${{ env.REGION }}
-          BACKEND_URL: ${{ env.BACKEND_URL }}
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.FRONTEND_SERVICE }}
+          image: ${{ env.FRONTEND_IMAGE }}
+          region: ${{ env.REGION }}
+          allow-unauthenticated: true
+          port: 8080
+          memory: 1Gi
+          timeout: 300s
+          set_env_vars: API_URL=${{ env.BACKEND_URL }}
