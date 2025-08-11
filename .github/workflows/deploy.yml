@@ -51,7 +51,7 @@ jobs:
             --allow-unauthenticated \
             --port 8080 \
             --memory 1Gi \
-            --timeout 600
+            --timeout 300
         env:
           BACKEND_SERVICE: ${{ env.BACKEND_SERVICE }}
           BACKEND_IMAGE: ${{ env.BACKEND_IMAGE }}
