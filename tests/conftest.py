@@ -14,13 +14,10 @@ class DummyModel:
         return [123.45]
 
 @pytest.fixture(autouse=True)
-def mock_gcs(monkeypatch):
-    def dummy_download_model_from_gcs():
-        return DummyModel()
-
-    # Patch the function in your app module that downloads the model
-    monkeypatch.setattr("api.app.download_model_from_gcs", dummy_download_model_from_gcs)
-
-    # Also patch the model instance used in the app
-    import api.app as app_module
-    app_module.model = dummy_download_model_from_gcs()
+def patch_download_model():
+    with patch("api.app.download_model_from_gcs", return_value=DummyModel()):
+        # Import app here so patch is active before app.py runs
+        import api.app as app_module
+        # Override the loaded model in the app to dummy
+        app_module.model = DummyModel()
+        yield

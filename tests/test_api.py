@@ -1,26 +1,16 @@
-import sys
-from unittest.mock import MagicMock, patch
-
-class DummyModel:
-    def predict(self, x):
-        return [123.45]
-
-# Patch before importing api.app to avoid real GCS calls at import time
-patcher = patch("api.app.download_model_from_gcs", return_value=DummyModel())
-patcher.start()
-
-import api.app as app_module
-
 from fastapi.testclient import TestClient
 
-client = TestClient(app_module.app)
-
 def test_home_route():
+    import api.app as app_module  # import after patching done by conftest.py
+    client = TestClient(app_module.app)
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "House Price Prediction API"}
 
 def test_predict_route():
+    import api.app as app_module
+    client = TestClient(app_module.app)
+
     payload = {
         "MedInc": 8.0,
         "HouseAge": 41.0,
@@ -31,9 +21,8 @@ def test_predict_route():
         "Latitude": 37.0,
         "Longitude": -122.0
     }
+
     response = client.post("/predict", json=payload)
     assert response.status_code == 200
     assert "predicted_price" in response.json()
     assert isinstance(response.json()["predicted_price"], float)
-
-patcher.stop()
