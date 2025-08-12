@@ -1,6 +1,15 @@
 # 📁 tests/test_api.py
+from unittest.mock import patch
+
+class DummyModel:
+    def predict(self, x):
+        return [123.45]
+
+with patch("api.app.download_model_from_gcs", return_value=DummyModel()):
+    from api.app import app
+
 from fastapi.testclient import TestClient
-from api.app import app
+#from api.app import app
 
 client = TestClient(app)
 
