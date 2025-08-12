@@ -1,24 +1,16 @@
-from unittest.mock import patch
-
-class DummyModel:
-    def predict(self, x):
-        return [123.45]
-
-patcher = patch("api.app.download_model_from_gcs", return_value=DummyModel())
-patcher.start()
-
-import api.app  # This import happens after patch
-
 from fastapi.testclient import TestClient
 
-client = TestClient(api.app.app)
-
 def test_home_route():
+    import api.app  # import after patch active
+    client = TestClient(api.app.app)
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "House Price Prediction API"}
 
 def test_predict_route():
+    import api.app
+    client = TestClient(api.app.app)
+
     payload = {
         "MedInc": 8.0,
         "HouseAge": 41.0,
@@ -33,5 +25,3 @@ def test_predict_route():
     assert response.status_code == 200
     assert "predicted_price" in response.json()
     assert isinstance(response.json()["predicted_price"], float)
-
-patcher.stop()
