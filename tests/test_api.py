@@ -1,30 +1,26 @@
-# 📁 tests/test_api.py
-from unittest.mock import patch
+import sys
+from unittest.mock import MagicMock, patch
 
 class DummyModel:
     def predict(self, x):
         return [123.45]
 
-with patch("api.app.download_model_from_gcs", return_value=DummyModel()):
-    from api.app import app
+# Patch before importing api.app to avoid real GCS calls at import time
+patcher = patch("api.app.download_model_from_gcs", return_value=DummyModel())
+patcher.start()
+
+import api.app as app_module
 
 from fastapi.testclient import TestClient
-#from api.app import app
 
-client = TestClient(app)
+client = TestClient(app_module.app)
 
 def test_home_route():
-    """
-    ✅ Test that the root (/) endpoint returns 200 OK.
-    """
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "House Price Prediction API"}
 
 def test_predict_route():
-    """
-    ✅ Test that /predict returns a valid prediction.
-    """
     payload = {
         "MedInc": 8.0,
         "HouseAge": 41.0,
@@ -37,5 +33,7 @@ def test_predict_route():
     }
     response = client.post("/predict", json=payload)
     assert response.status_code == 200
-    assert "predicted_price" in response.json(), "Response must contain predicted_price"
+    assert "predicted_price" in response.json()
     assert isinstance(response.json()["predicted_price"], float)
+
+patcher.stop()
