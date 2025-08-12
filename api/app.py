@@ -6,11 +6,14 @@ import os
 import tempfile
 from google.cloud import storage
 
+
 app = FastAPI()
+
 
 # GCS bucket and file
 GCS_BUCKET = "house-price-models-468401"
 GCS_FILE_NAME = "house_price_model.joblib"
+
 
 def download_model_from_gcs():
     """Download model from GCS to a temporary location and load it."""
@@ -23,8 +26,10 @@ def download_model_from_gcs():
 
     return joblib.load(temp_path)
 
+
 # Load the model at startup
 model = download_model_from_gcs()
+
 
 class HouseFeatures(BaseModel):
     MedInc: float
@@ -36,28 +41,31 @@ class HouseFeatures(BaseModel):
     Latitude: float
     Longitude: float
 
+
 @app.get("/")
 def home():
     return {"message": "House Price Prediction API"}
 
+
 @app.post("/predict")
 def predict_price(features: HouseFeatures):
-    input_data = np.array([[
-        features.MedInc,
-        features.HouseAge,
-        features.AveRooms,
-        features.AveBedrms,
-        features.Population,
-        features.AveOccup,
-        features.Latitude,
-        features.Longitude
-    ]])
+    input_data = np.array([
+        [
+            features.MedInc,
+            features.HouseAge,
+            features.AveRooms,
+            features.AveBedrms,
+            features.Population,
+            features.AveOccup,
+            features.Latitude,
+            features.Longitude
+        ]
+    ])
     prediction = model.predict(input_data)
     return {"predicted_price": round(float(prediction[0]), 3)}
 
 
 """
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
@@ -98,16 +106,18 @@ def home():
 
 @app.post("/predict")
 def predict_price(features: HouseFeatures):
-    input_data = np.array([[
-        features.MedInc,
-        features.HouseAge,
-        features.AveRooms,
-        features.AveBedrms,
-        features.Population,
-        features.AveOccup,
-        features.Latitude,
-        features.Longitude
-    ]])
+    input_data = np.array([
+        [
+            features.MedInc,
+            features.HouseAge,
+            features.AveRooms,
+            features.AveBedrms,
+            features.Population,
+            features.AveOccup,
+            features.Latitude,
+            features.Longitude
+        ]
+    ])
     prediction = model.predict(input_data)
     return {"predicted_price": round(float(prediction[0]), 3)}
 
@@ -118,3 +128,4 @@ if __name__ == "__main__":
 # To run the FastAPI app, use the command:
 # uvicorn app:app --host
 """
+
