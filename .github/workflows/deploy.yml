@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+
 env:
   PROJECT_ID: house-price-predictor-468401
   REGION: us-central1
@@ -11,6 +12,7 @@ env:
   BACKEND_IMAGE: gcr.io/house-price-predictor-468401/house-backend:latest
   FRONTEND_IMAGE: gcr.io/house-price-predictor-468401/house-frontend:latest
   BACKEND_URL: https://house-backend-892821973348.us-central1.run.app
+
 jobs:
   deploy:
     permissions:
@@ -51,7 +53,7 @@ jobs:
             --allow-unauthenticated \
             --port 8080 \
             --memory 1Gi \
-            --timeout 300
+            --timeout 600
         env:
           BACKEND_SERVICE: ${{ env.BACKEND_SERVICE }}
           BACKEND_IMAGE: ${{ env.BACKEND_IMAGE }}
@@ -74,7 +76,7 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --port 8080 \
-            --memory 1Gi \
+            --memory 512Mi \
             --set-env-vars API_URL="${BACKEND_URL}" \
             --timeout 300
         env:

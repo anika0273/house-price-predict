@@ -1,6 +1,7 @@
 # Base image
 FROM python:3.11-slim
 
+
 # Set working directory inside the container
 WORKDIR /app
 
@@ -13,7 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the models folder to the working directory of the container i.e. /app folder
 COPY api/ /app/
-COPY models/ /app/models/
+# COPY models/ /app/models/ # uploaded the joblib file to google cloud directly
+
+# Create models directory (model will be downloaded at runtime)
+RUN mkdir -p /app/models
 
 # Expose the port your FastAPI app listens on
 EXPOSE 8080
