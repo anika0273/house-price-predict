@@ -16,8 +16,6 @@ class DummyModel:
 @pytest.fixture(autouse=True)
 def patch_download_model():
     with patch("api.app.download_model_from_gcs", return_value=DummyModel()):
-        # Import app here so patch is active before app.py runs
         import api.app as app_module
-        # Override the loaded model in the app to dummy
-        app_module.model = DummyModel()
+        app_module.model = DummyModel()  # override loaded model with dummy
         yield
